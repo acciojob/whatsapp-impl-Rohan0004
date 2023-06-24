@@ -40,8 +40,6 @@ public class WhatsappRepository {
     }
 
     public Group createGroup(List<User> users) {
-        if (users.size()<2) return null;
-
         if (users.size()==2){
             Group group = new Group(users.get(1).getName(),2);
             this.groupUserMap.put(group,users);
@@ -53,17 +51,17 @@ public class WhatsappRepository {
 
         Group group = new Group("Group "+this.customGroupCount,users.size());
         this.groupUserMap.put(group,users);
-        this.customGroupCount++;
 
         adminMap.put(group,users.get(0));
+        this.customGroupCount++;
 
         return group;
     }
 
     public int createMessage(String content) {
-        messageDB.put(messageId,content);
+        Message message=new Message(messageId,content);
         messageId++;
-        return messageId-1;
+        return message.getId();
     }
 
     public int sendMessage(Message message, User sender, Group group) throws Exception {
