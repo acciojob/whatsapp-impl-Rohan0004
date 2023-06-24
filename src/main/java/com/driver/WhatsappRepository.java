@@ -26,8 +26,8 @@ public class WhatsappRepository {
         this.senderMap = new HashMap<Message, User>();
         this.adminMap = new HashMap<Group, User>();
         this.userMobile = new HashSet<>();
-        this.customGroupCount = 0;
-        this.messageId = 0;
+        this.customGroupCount = 1;
+        this.messageId = 1;
         this.userDB=new HashMap<>();
         this.messageDB=new HashMap<>();
     }
@@ -49,7 +49,8 @@ public class WhatsappRepository {
             return group;
         }
 
-        Group group = new Group("Group "+this.customGroupCount,users.size());
+        String name="Group "+this.customGroupCount;
+        Group group = new Group(name,users.size());
         this.groupUserMap.put(group,users);
 
         adminMap.put(group,users.get(0));
