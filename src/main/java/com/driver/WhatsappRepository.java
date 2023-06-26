@@ -2,6 +2,7 @@ package com.driver;
 
 import java.util.*;
 
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -81,5 +82,41 @@ public class WhatsappRepository {
         if (!groupUserMap.get(group).contains(user)) throw new Exception("User is not a participant");
         adminMap.put(group,user);
         return "SUCCESS";
+    }
+
+    public int removeUser(User user) throws Exception{
+
+        for (Group group:groupUserMap.keySet()) {
+            if (groupUserMap.get(group).contains(user)){
+                if (adminMap.get(group).equals(user)) throw new Exception("Cannot remove admin");
+
+                groupUserMap.get(group).remove(user);
+                List<Message> messages= new ArrayList<>();
+                for (Message message:groupMessageMap.get(group)) {
+                    if(senderMap.get(message).equals(user)){
+                        senderMap.remove(message);
+                    }else messages.add(message);
+                }
+                groupMessageMap.put(group,messages);
+                return groupUserMap.get(group).size()+messages.size()+senderMap.size();
+            }
+        }
+        throw new Exception("User not found");
+    }
+
+    public String findMessage(Date start, Date end, int k) throws Exception {
+        List<Message> messages=new ArrayList<>();
+        for (Message msg:senderMap.keySet()) {
+            if (start.before(msg.getTimestamp()) && end.after(msg.getTimestamp())) messages.add(msg);
+        }
+
+        if (k>messages.size()) throw new Exception("K is greater than the number of messages");
+
+        Collections.sort(messages,(a,b)->{
+            if(a.getTimestamp().before(b.getTimestamp())) return -1;
+            return 1;
+        });
+
+        return messages.get(messages.size()-k).toString();
     }
 }
